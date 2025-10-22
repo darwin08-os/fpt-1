@@ -25,8 +25,20 @@ while True:
 and command[0:3]!='get' and (command.startswith("cd") \
 or command.startswith("ls") or command.startswith("pwd")) :
 			client.send(command.encode())
-			output = client.recv(2048).decode()
+			size = int(client.recv(1024).decode())  # size of output in bytes
+			received = 0
+			output_bytes = b""
+
+			while received < size:
+				chunk = client.recv(min(4096, size - received))  # read in 4 KB chunks
+				if not chunk:
+					break  # connection closed unexpectedly
+				output_bytes += chunk
+				received += len(chunk)
+
+			output = output_bytes.decode(errors="replace")  # decode once at the end
 			print(output)
+
 		if command.startswith('send'):
 			#three way handshake
 			client.send("SEND".encode())
