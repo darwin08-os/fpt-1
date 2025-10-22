@@ -5,8 +5,8 @@ import os
 import subprocess
 
 #variables
-# host = socket.gethostbyname(socket.gethostname())
-host = "127.0.0.1"
+host = socket.gethostbyname(socket.gethostname())
+#host = "127.0.0.1"
 port = 41000
 
 #socket
