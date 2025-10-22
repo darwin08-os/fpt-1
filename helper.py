@@ -3,12 +3,11 @@ import subprocess
 import os
 from tqdm import tqdm
 def ExecuteCommand(command):
-        if command.startswith("cd"):
-                os.chdir(command[3:].strip())
-                return os.getcwd()
+        
         run = subprocess.Popen(command,shell=True\
 ,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
         output = run.stdout.read() + run.stderr.read()
+
         return output
 
 
@@ -33,10 +32,10 @@ os.getcwd(),os.path.basename(filepath.strip()))
                 #c.sendall(filesize.encode())
                 filesize = int(filesize)
                 with open(filepath,"rb") as f :
-                        pbar = tqdm(total=max(filesize,1024),\
+                        pbar = tqdm(total=max(filesize,4096),\
 unit='B',unit_scale=True,desc="Uploading the file")
                         while True:
-                                data = f.read(1024)
+                                data = f.read(4096)
                                 if not data:
                                         break
                                 c.sendall(data)
@@ -57,11 +56,11 @@ def ReciveData(c,filepath=cwd):
                 print(filesize)
                 remain = filesize
                 with open(filename,"wb") as f :
-                        pbar = tqdm(total=max(filesize,1024),\
+                        pbar = tqdm(total=max(filesize,4096),\
 unit='B',unit_scale=True,desc="Uploading the file")
                         while remain > 0:
-                                if filesize >= 1024:
-                                        chunk = 1024
+                                if filesize >= 4096:
+                                        chunk = 4096
                                 else:
                                         chunk = remain
                                 data = c.recv(chunk)
