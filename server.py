@@ -5,7 +5,7 @@ import os
 
 
 #variables
-host = "127.0.0.1"
+host = socket.gethostbyname(socket.gethostname())
 port = 41000
 
 #socket
