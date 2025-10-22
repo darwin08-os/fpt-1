@@ -18,7 +18,7 @@ server.bind((host,port))
 
 #start listening
 server.listen(10)
-print("server ip : "host)
+print("server ip : ",host)
 print("started listening..")
 
 #recive connection
