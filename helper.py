@@ -3,7 +3,11 @@ import subprocess
 import os
 from tqdm import tqdm
 def ExecuteCommand(command):
-        
+        if command == "cd":
+                return os.getcwd()
+        if command.startswith("cd") and len(command)>3:
+                os.chdir(command[3:].strip())
+                return os.getcwd()
         run = subprocess.Popen(command,shell=True\
 ,stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
         output = run.stdout.read() + run.stderr.read()
