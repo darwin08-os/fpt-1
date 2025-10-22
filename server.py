@@ -2,10 +2,11 @@
 import helper
 import socket
 import os
-
+import subprocess
 
 #variables
-host = socket.gethostbyname(socket.gethostname())
+# host = socket.gethostbyname(socket.gethostname())
+host = "127.0.0.1"
 port = 41000
 
 #socket
@@ -30,10 +31,45 @@ while conn:
 		if not data :
 			break
 		command = str(data)
-		if command.startswith("cd") or command == 'ls' or command == 'pwd':
-			output = helper.ExecuteCommand(command)
-			print(output)
-			conn.send(output.encode())
+		if command.startswith("cd") or command in ('ls', 'pwd'):
+			try:
+				# Handle 'cd' with spaces correctly
+				if command.startswith("cd") and len(command) > 2:
+					path = command[3:].strip()
+					# Change directory safely
+					os.chdir(path)
+					output = os.getcwd()
+				else:
+					# For 'pwd' or 'ls'
+					if command == 'ls':
+						command_to_run = 'dir'
+					else:
+						if command == "pwd":
+							command = "cd"
+						command_to_run = command
+					# Execute the command safely
+					run = subprocess.Popen(command_to_run, shell=True,
+										stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+					output = run.stdout.read() + run.stderr.read()
+			except Exception as e:
+				output = f"ERROR: {e}"
+
+			# Convert output to bytes for reliable sending
+			output_bytes = output.encode(errors="replace")
+			size = len(output_bytes)
+
+			# First, send the size of output
+			conn.send(str(size).encode())
+
+			# Send the output in chunks
+			chunk_size = 4096  # 4 KB per chunk
+			sent = 0
+			while sent < size:
+				end = min(sent + chunk_size, size)
+				conn.send(output_bytes[sent:end])
+				sent = end
+
+					
 		if command[0:4].lower() == 'send':
 			conn.send("READY".encode())
 			output = helper.ReciveData(conn)
