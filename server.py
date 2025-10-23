@@ -82,6 +82,5 @@ while conn:
 				print(output)
 	except Exception as e :
 		print(e)
-		conn.close()
 server.close()
 
