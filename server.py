@@ -81,6 +81,7 @@ while conn:
 				output = helper.SendData(conn,command[4:])
 				print(output)
 	except Exception as e :
+		print(e)
 		conn.close()
 server.close()
 
